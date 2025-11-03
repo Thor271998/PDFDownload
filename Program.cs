@@ -28,16 +28,16 @@ namespace PDFDownloader
             Reader reader = new Reader();
 
             //Path for the list of URLs
-            string listPath = @"C:\Visual Studio Projecter\PDFDownload\PDFDownload\List Folder\GRI_2017_2020 (1).xlsx";
+            string listPath = @"List_Folder/GRI_2017_2020 (1).xlsx";
 
             //Path for output folder
-            string outputPath = @"C:\Visual Studio Projecter\PDFDownload\PDFDownload\Output\";
+            string outputPath = @"Output/";
 
             //Path for status rapport
-            string statusPath = @"C:\Visual Studio Projecter\PDFDownload\PDFDownload\Output\StatusRapport.txt";
+            string statusPath = @"Output/StatusRapport.txt";
 
             //Path for existing downloads
-            string dwnPath = @"C:\Visual Studio Projecter\PDFDownload\PDFDownload\Output\dwn\";
+            string dwnPath = @"Output/dwn/";
 
             //Getting a list of existing PDF files in the download directory
             string[] existingFiles = Directory.GetFiles(dwnPath, "*.pdf");

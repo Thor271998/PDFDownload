@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  pdfdownload:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pdfdownload:latest
+    container_name: pdfdownload
+    working_dir: /source/app
+    volumes:
+      - ./List_Folder:/source/app/List_Folder:ro
+      - ./Output:/source/app/Output
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+    restart: "no"
+    # The Dockerfile sets ENTRYPOINT to run `dotnet PDFDownload.dll`.
+    # This service is a console-style worker: it will run and exit when the program completes.
