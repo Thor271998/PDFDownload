@@ -17,4 +17,8 @@
     <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="out\" />
+  </ItemGroup>
+
 </Project>
