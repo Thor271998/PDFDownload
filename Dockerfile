@@ -1,15 +1,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /source
-COPY *.csproj .
+COPY PDFDownload.sln .
+COPY PDFDownload/PDFDownload.csproj PDFDownload/
+COPY PDFDownloaderTestProject/PDFDownloaderTestProject.csproj PDFDownloaderTestProject/
 RUN dotnet restore
 
-COPY . ./app
-WORKDIR /source/app
+COPY . .
+WORKDIR /source/PDFDownload
 RUN dotnet publish -c release -o /out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
-WORKDIR /source/app
+WORKDIR /app
 COPY --from=build /out ./
-COPY List_Folder List_Folder
-COPY Output Output
+COPY PDFDownload/List_Folder List_Folder
+COPY PDFDownload/Output Output
+ENV DOTNET_ENVIRONMENT=Production
 ENTRYPOINT ["dotnet", "PDFDownload.dll"]
