@@ -27,11 +27,22 @@ namespace PDFDownloader
             Downloader downloader = new Downloader();
             Reader reader = new Reader();
 
+            //Local use path strings
+            string projectDirectory = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
+            Console.WriteLine(projectDirectory);
+
+            //Path for the list of URLs
+            //string listPath = projectDirectory + "/" + @"List_Folder/GRI_2017_2020 (1).xlsx";
+
+            //Path for status rapport
+            //string statusPath = projectDirectory + "/" + @"Output/StatusRapport.txt";
+
+            //Path for existing downloads
+            //string dwnPath = projectDirectory + "/" + @"Output/dwn/";
+
+            //Docker use path strings
             //Path for the list of URLs
             string listPath = @"List_Folder/GRI_2017_2020 (1).xlsx";
-
-            //Path for output folder
-            string outputPath = @"Output/";
 
             //Path for status rapport
             string statusPath = @"Output/StatusRapport.txt";
