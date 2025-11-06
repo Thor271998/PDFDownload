@@ -19,7 +19,7 @@ namespace PDFDownloader
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
@@ -27,9 +27,23 @@ namespace PDFDownloader
             Downloader downloader = new Downloader();
             Reader reader = new Reader();
 
-            //Local use path strings
-            string projectDirectory = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
-            Console.WriteLine(projectDirectory);
+            // Start from where the assembly is running
+            string baseDir = AppContext.BaseDirectory;
+
+            // Detect if we're running in Docker (in /app) or locally (in bin/Debug/net8.0)
+            string possibleProjectRoot = Directory.GetParent(baseDir)?.FullName ?? baseDir;
+
+            // If "bin" exists in the path, we're running locally → go up to project root
+            if (possibleProjectRoot.Contains("bin"))
+            {
+                possibleProjectRoot = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(baseDir)!.FullName)!.FullName)!.FullName)!.FullName;
+            }
+
+            string excelPath = Path.Combine(possibleProjectRoot, "List_Folder", "GRI_2017_2020 (1).xlsx");
+
+            string downloadPath = Path.Combine(possibleProjectRoot, "Output", "dwn/");
+
+            string rapportPath = Path.Combine(possibleProjectRoot, "Output", "StatusRapport.txt");
 
             //Path for the list of URLs
             //string listPath = projectDirectory + "/" + @"List_Folder/GRI_2017_2020 (1).xlsx";
@@ -51,11 +65,11 @@ namespace PDFDownloader
             string dwnPath = @"Output/dwn/";
 
             //Getting a list of existing PDF files in the download directory
-            string[] existingFiles = Directory.GetFiles(dwnPath, "*.pdf");
+            string[] existingFiles = Directory.GetFiles(downloadPath, "*.pdf");
 
             //Reading the Excel file using the Reader class
             DataTable dataTable = new DataTable();
-            dataTable = reader.ReadFile(listPath);
+            dataTable = reader.ReadFile(excelPath);
 
             //Iterating through each row in the DataTable
             foreach (DataRow row in dataTable.Rows)
@@ -73,7 +87,7 @@ namespace PDFDownloader
                 HttpClient client = new HttpClient();
 
                 //Downloading the PDF file using the Downloader class if it isn't already downloaded
-                downloader.DownloadFile(client, url, dwnPath, statusPath, pdfName, secondaryUrl);
+                await downloader.DownloadFile(client, url, downloadPath, rapportPath, pdfName, secondaryUrl);
             }
         }
     }
