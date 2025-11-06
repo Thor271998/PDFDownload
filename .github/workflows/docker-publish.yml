@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: PDFDownload/Dockerfile
+          file: Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/pdfdownload:latest
@@ -37,7 +37,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: PDFDownloaderTestProject/Dockerfile
+          file: ../PDFDownloaderTestProject/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/pdfdownload-test:latest
