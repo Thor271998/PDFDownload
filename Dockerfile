@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /source
 COPY PDFDownload.sln .
 COPY PDFDownload/PDFDownload.csproj PDFDownload/
-COPY ../PDFDownloaderTestProject/PDFDownloaderTestProject.csproj PDFDownloaderTestProject/
+COPY ../../PDFDownloaderTestProject/PDFDownloaderTestProject.csproj PDFDownloaderTestProject/
 RUN dotnet restore
 
 COPY . .
