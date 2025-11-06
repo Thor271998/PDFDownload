@@ -13,6 +13,7 @@ using ExcelDataReader;
 using System.Data;
 using OfficeOpenXml;
 using ClosedXML.Excel;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace PDFDownload
 {
@@ -20,14 +21,14 @@ namespace PDFDownload
     public class Downloader
     {
         //Defining the method that will download a PDF file from a given URL
-        public async void DownloadFile(string url, string downloadPath, string rapportPath, string pdfName, string secondUrl = "")
+        public async Task DownloadFile(HttpClient client, string url, string downloadPath, string rapportPath, string pdfName, string secondUrl = "")
         {
             //Defining a string to hold the status report
             string rapport = "";
 
             //Using HttpClient to send a GET request to the specified URL
             //The using statement ensures that the HttpClient is properly disposed of after use
-            using (HttpClient client = new HttpClient())
+            using (client/*HttpClient client = new HttpClient()*/)
             {
                 //Setting a try-catch-finally block to handle exceptions and ensure the report is written
                 try
@@ -37,11 +38,6 @@ namespace PDFDownload
 
                     //Ensuring the response indicates success
                     response.EnsureSuccessStatusCode();
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new Exception($"Failed to download PDF. Status code: {response.StatusCode}");
-                    }
 
                     // Checking if the content type of the responde is PDF
                     if (response.Content.Headers.ContentType?.MediaType != "application/pdf")
@@ -67,7 +63,7 @@ namespace PDFDownload
                     if (secondUrl != "")
                     {
                         //Recursively call the DownloadFile method with the second URL
-                        DownloadFile(secondUrl, downloadPath, rapportPath, pdfName);
+                        DownloadFile(client, secondUrl, downloadPath, rapportPath, pdfName);
                     } else
                     {
                         //Updating the status report to indicate failure
@@ -89,6 +85,63 @@ namespace PDFDownload
                     }
                 }
             }
+        }
+
+        public async Task<byte[]> GetPDFFile(string url, string secondUrl = "")
+        {
+            byte[] pdfBytes = Array.Empty<byte>();
+
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+
+                    //Ensuring the response indicates success
+                    response.EnsureSuccessStatusCode();
+
+                    // Checking if the content type of the responde is PDF
+                    if (response.Content.Headers.ContentType?.MediaType != "application/pdf")
+                    {
+                        throw new Exception("The URL does not point to a valid PDF file.");
+                    }
+
+                    pdfBytes = await response.Content.ReadAsByteArrayAsync();
+                } catch (Exception ex)
+                {
+                    //If the first download fails and a second URL is provided, attempt to download from the second URL
+                    if (secondUrl != "")
+                    {
+                        //Recursively call the DownloadFile method with the second URL
+                        pdfBytes = await GetPDFFile(secondUrl);
+                    }
+                    else
+                    {
+                        //Updating the status report to indicate failure
+                        Console.WriteLine($"An error occurred: {ex.Message}");
+                    }
+                }
+            }
+            
+            return pdfBytes;
+        }
+
+        public async Task<bool> DownloadPdf(string downloadPath, byte[] pdfBytes)
+        {
+            bool successDownloaded = false;
+
+            try
+            {
+                await File.WriteAllBytesAsync(downloadPath, pdfBytes);
+
+                successDownloaded = true;
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                successDownloaded = false;
+            }
+
+            return successDownloaded;
         }
     }
 }

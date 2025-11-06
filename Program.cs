@@ -70,8 +70,10 @@ namespace PDFDownloader
                 if (/*url == "" || */existingFiles.Contains(pdfName))
                     continue;
 
+                HttpClient client = new HttpClient();
+
                 //Downloading the PDF file using the Downloader class if it isn't already downloaded
-                downloader.DownloadFile(url, dwnPath, statusPath, pdfName, secondaryUrl);
+                downloader.DownloadFile(client, url, dwnPath, statusPath, pdfName, secondaryUrl);
             }
         }
     }
