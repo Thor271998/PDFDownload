@@ -12,8 +12,8 @@ RUN dotnet publish -c release -o /out
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /out ./
-RUN mkdir -p List_Folder
-RUN mkdir -p Output
+COPY PDFDownload/List_Folder List_Folder
+COPY PDFDownload/Output Output
 
 ENV DOTNET_ENVIRONMENT=Production
 ENTRYPOINT ["dotnet", "PDFDownload.dll"]
